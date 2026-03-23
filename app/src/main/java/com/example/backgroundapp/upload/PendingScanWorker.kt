@@ -1,6 +1,7 @@
 package com.example.backgroundapp.upload
 
 import android.content.Context
+import android.provider.Settings
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.backgroundapp.BackgroundApp
@@ -26,6 +27,11 @@ class PendingScanWorker(
         if (settings.uploadEndpoint.isBlank() || settings.destinationEmail.isBlank()) {
             return@withContext Result.success()
         }
+        val deviceId =
+            Settings.Secure.getString(
+                applicationContext.contentResolver,
+                Settings.Secure.ANDROID_ID,
+            ).orEmpty()
         val dir = File(applicationContext.filesDir, MonitoringForegroundService.RECORDINGS_SUBDIR)
         if (!dir.isDirectory) return@withContext Result.success()
         dir.listFiles { f -> f.isFile && f.name.endsWith(".wav") }?.forEach { file ->
@@ -34,6 +40,7 @@ class PendingScanWorker(
                 file.absolutePath,
                 settings.destinationEmail,
                 settings.uploadEndpoint,
+                deviceId,
             )
         }
         Result.success()

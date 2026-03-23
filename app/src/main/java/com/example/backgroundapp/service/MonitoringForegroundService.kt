@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -109,6 +110,8 @@ class MonitoringForegroundService : Service() {
         val settings = runBlocking { repo.settings.first() }
         val email = settings.destinationEmail
         val endpoint = settings.uploadEndpoint
+        val deviceId =
+            Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID).orEmpty()
         val recordingsDir = File(filesDir, RECORDINGS_SUBDIR).apply { mkdirs() }
         val readBuffer = ShortArray(VoiceActivityConfig.FRAME_SAMPLES)
         var recording = false
@@ -191,6 +194,7 @@ class MonitoringForegroundService : Service() {
                                     file.absolutePath,
                                     email,
                                     endpoint,
+                                    deviceId,
                                 )
                             }
                         } else {

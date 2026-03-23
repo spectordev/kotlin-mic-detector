@@ -18,9 +18,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BACKEND_BASE_URL", "\"\"")
     }
 
     buildTypes {
+        debug {
+            // Emulator → host machine (Phase 5): backend `npm start` on port 3000
+            buildConfigField(
+                "String",
+                "BACKEND_BASE_URL",
+                "\"http://localhost:3000\"",
+            )
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -38,6 +47,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

@@ -31,8 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.backgroundapp.BackgroundApp
+import com.example.backgroundapp.BuildConfig
 import com.example.backgroundapp.R
 import com.example.backgroundapp.data.MonitorSettings
+import com.example.backgroundapp.network.BackendDeviceSync
 import com.example.backgroundapp.service.MonitoringForegroundService
 import com.example.backgroundapp.upload.UploadWorkScheduler
 import kotlinx.coroutines.launch
@@ -51,7 +53,11 @@ fun MonitoringScreen(
         initialValue = MonitorSettings("", "", false),
     )
     var emailDraft by remember(settings.destinationEmail) { mutableStateOf(settings.destinationEmail) }
-    var endpointDraft by remember(settings.uploadEndpoint) { mutableStateOf(settings.uploadEndpoint) }
+    var endpointDraft by remember(settings.uploadEndpoint) {
+        mutableStateOf(
+            settings.uploadEndpoint.ifEmpty { defaultUploadEndpoint() },
+        )
+    }
 
     LaunchedEffect(Unit) {
         UploadWorkScheduler.schedulePendingScan(context)
@@ -94,6 +100,7 @@ fun MonitoringScreen(
                 scope.launch {
                     repo.setDestinationEmail(emailDraft)
                     repo.setUploadEndpoint(endpointDraft)
+                    BackendDeviceSync.registerDeviceEmail(context, emailDraft)
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -140,6 +147,11 @@ fun MonitoringScreen(
             )
         }
     }
+}
+
+private fun defaultUploadEndpoint(): String {
+    val base = BuildConfig.BACKEND_BASE_URL.trim().trimEnd('/')
+    return if (base.isNotEmpty()) "$base/recordings/upload" else ""
 }
 
 private fun openBatteryOptimizationSettings(context: Context) {

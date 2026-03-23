@@ -32,6 +32,7 @@ class AudioUploadWorker(
         val path = inputData.getString(KEY_FILE_PATH) ?: return@withContext Result.failure()
         val email = inputData.getString(KEY_EMAIL).orEmpty()
         val endpoint = inputData.getString(KEY_ENDPOINT).orEmpty()
+        val deviceId = inputData.getString(KEY_DEVICE_ID).orEmpty()
         if (email.isBlank() || endpoint.isBlank()) {
             return@withContext Result.failure()
         }
@@ -52,6 +53,11 @@ class AudioUploadWorker(
         val body = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("recipient_email", email)
+            .apply {
+                if (deviceId.isNotBlank()) {
+                    addFormDataPart("device_id", deviceId)
+                }
+            }
             .addFormDataPart(
                 "audio",
                 file.name,
@@ -84,6 +90,7 @@ class AudioUploadWorker(
         const val KEY_FILE_PATH = "file_path"
         const val KEY_EMAIL = "recipient_email"
         const val KEY_ENDPOINT = "upload_endpoint"
+        const val KEY_DEVICE_ID = "device_id"
         private const val TAG = "AudioUploadWorker"
         private const val MAX_UPLOAD_BYTES = 12L * 1024L * 1024L
     }

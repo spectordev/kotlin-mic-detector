@@ -17,6 +17,7 @@ object UploadWorkScheduler {
         filePath: String,
         recipientEmail: String,
         uploadEndpoint: String,
+        deviceId: String = "",
     ) {
         if (uploadEndpoint.isBlank()) return
         val workName = "upload-${filePath.hashCode()}"
@@ -24,6 +25,9 @@ object UploadWorkScheduler {
             .putString(AudioUploadWorker.KEY_FILE_PATH, filePath)
             .putString(AudioUploadWorker.KEY_EMAIL, recipientEmail)
             .putString(AudioUploadWorker.KEY_ENDPOINT, uploadEndpoint)
+            .apply {
+                if (deviceId.isNotBlank()) putString(AudioUploadWorker.KEY_DEVICE_ID, deviceId)
+            }
             .build()
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
