@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">BackgroundApp</string>
+    <string name="screen_title">Monitoring</string>
+    <string name="screen_intro">Configure email and your HTTPS upload endpoint (backend). Clips upload as multipart form: recipient_email + audio (WAV).</string>
+    <string name="action_request_mic">Request microphone permission</string>
+    <string name="label_destination_email">Destination email</string>
+    <string name="label_upload_endpoint">Upload URL (HTTPS)</string>
+    <string name="hint_upload_endpoint">https://api.example.com/v1/send-audio</string>
+    <string name="action_save_settings">Save settings</string>
+    <string name="section_battery">Battery</string>
+    <string name="section_battery_body">For reliable background capture, exclude this app from battery optimization if the system allows it.</string>
+    <string name="action_battery_settings">Open battery optimization settings</string>
+    <string name="section_monitor">Monitoring</string>
+    <string name="status_monitoring_on">Monitoring is running (foreground service).</string>
+    <string name="status_monitoring_off">Monitoring is stopped.</string>
+    <string name="action_start_monitoring">Start monitoring</string>
+    <string name="action_stop_monitoring">Stop monitoring</string>
+    <string name="hint_start_requires_permissions">Start will prompt for microphone (and notification on Android 13+) if needed.</string>
+    <string name="toast_mic_required">Microphone permission is required.</string>
+    <string name="toast_email_required">Save a destination email first.</string>
+    <string name="toast_endpoint_recommended">Add an upload URL so clips can be sent to your backend.</string>
+    <string name="notification_channel_name">Monitoring</string>
+    <string name="notification_title">Audio monitoring</string>
+    <string name="notification_monitoring_active">Listening for voice activity…</string>
+    <string name="notification_action_stop">Stop</string>
+    <string name="notification_mic_error">Microphone unavailable</string>
+    <string name="notification_permission_revoked">Microphone permission revoked</string>
+    <string name="toast_battery_intent_failed">Could not open battery settings on this device.</string>
+</resources>
