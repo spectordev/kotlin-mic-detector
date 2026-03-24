@@ -24,7 +24,9 @@ import com.example.backgroundapp.service.MonitoringForegroundService
 import com.example.backgroundapp.ui.MonitoringScreen
 import com.example.backgroundapp.ui.theme.BackgroundAppTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -43,7 +45,14 @@ class MainActivity : ComponentActivity() {
 
                 val notifLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission(),
-                ) {
+                ) { granted ->
+                    if (!granted) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.toast_notifications_denied,
+                            Toast.LENGTH_LONG,
+                        ).show()
+                    }
                     beginMonitoring(repo, scope)
                 }
 
@@ -121,8 +130,21 @@ class MainActivity : ComponentActivity() {
 
     private fun beginMonitoring(repo: PreferencesRepository, scope: CoroutineScope) {
         scope.launch {
-            repo.setMonitoringActive(true)
+            try {
+                repo.setMonitoringActive(true)
+                withContext(Dispatchers.Main) {
+                    MonitoringForegroundService.start(this@MainActivity)
+                }
+            } catch (e: Exception) {
+                repo.setMonitoringActive(false)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        R.string.toast_could_not_start_monitoring,
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
         }
-        MonitoringForegroundService.start(this)
     }
 }

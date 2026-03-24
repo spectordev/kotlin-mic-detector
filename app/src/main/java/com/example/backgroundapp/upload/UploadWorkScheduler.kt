@@ -41,9 +41,11 @@ object UploadWorkScheduler {
                 TimeUnit.MILLISECONDS,
             )
             .build()
+        // REPLACE so a failed upload (e.g. 4xx after URL fix) or PendingScan can run again;
+        // KEEP left permanent failures stuck with no retry for the same file path.
         WorkManager.getInstance(context).enqueueUniqueWork(
             workName,
-            ExistingWorkPolicy.KEEP,
+            ExistingWorkPolicy.REPLACE,
             request,
         )
     }

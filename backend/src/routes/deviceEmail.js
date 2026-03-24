@@ -1,7 +1,10 @@
 import { Router } from 'express'
-import { z } from 'zod'
 import { query } from '../db.js'
-import { deviceEmailBodySchema, validateBody } from '../middleware/validate.js'
+import {
+  deviceEmailBodySchema,
+  deviceEmailQuerySchema,
+  validateBody,
+} from '../middleware/validate.js'
 
 const router = Router()
 
@@ -19,13 +22,9 @@ router.post('/email', validateBody(deviceEmailBodySchema), async (req, res, next
   }
 })
 
-const querySchema = z.object({
-  device_id: z.string().trim().min(1).max(64),
-})
-
 router.get('/email', async (req, res, next) => {
   try {
-    const parsed = querySchema.safeParse(req.query)
+    const parsed = deviceEmailQuerySchema.safeParse(req.query)
     if (!parsed.success) {
       return res.status(400).json({ error: 'validation_error', details: parsed.error.flatten() })
     }

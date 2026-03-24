@@ -19,8 +19,16 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-export async function scheduleRecordingDelivery(recordingId) {
-  setImmediate(() => processRecordingWithRetries(recordingId))
+export function scheduleRecordingDelivery(recordingId) {
+  setImmediate(() => {
+    processRecordingWithRetries(recordingId).catch((err) => {
+      console.error(
+        '[scheduleRecordingDelivery]',
+        recordingId,
+        err?.sqlMessage || err?.message || err,
+      )
+    })
+  })
 }
 
 async function processRecordingWithRetries(recordingId) {

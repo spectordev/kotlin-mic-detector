@@ -2,10 +2,12 @@ import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-dotenv.config()
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+/** Parent of `src/` — load `.env` here so credentials work even if cwd is not `backend/` */
 const root = path.join(__dirname, '..')
+
+dotenv.config({ path: path.join(root, '.env') })
+dotenv.config()
 
 export const config = {
   port: Number(process.env.PORT) || 3000,

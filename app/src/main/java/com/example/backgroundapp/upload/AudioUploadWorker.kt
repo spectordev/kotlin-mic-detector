@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -34,6 +35,11 @@ class AudioUploadWorker(
         val endpoint = inputData.getString(KEY_ENDPOINT).orEmpty()
         val deviceId = inputData.getString(KEY_DEVICE_ID).orEmpty()
         if (email.isBlank() || endpoint.isBlank()) {
+            return@withContext Result.failure()
+        }
+        val httpUrl = endpoint.trim().toHttpUrlOrNull()
+        if (httpUrl == null) {
+            Log.w(TAG, "Invalid upload URL (malformed): ${endpoint.take(80)}")
             return@withContext Result.failure()
         }
         val file = File(path)
@@ -65,7 +71,7 @@ class AudioUploadWorker(
             )
             .build()
         val request = Request.Builder()
-            .url(endpoint)
+            .url(httpUrl)
             .post(body)
             .build()
         return@withContext try {
@@ -76,8 +82,10 @@ class AudioUploadWorker(
                     }
                     Result.success()
                 } else {
-                    Log.w(TAG, "Upload failed: ${response.code} ${response.message}")
-                    Result.retry()
+                    val code = response.code
+                    val retryable = code >= 500 || code == 408 || code == 429
+                    Log.w(TAG, "Upload failed: $code ${response.message}")
+                    if (retryable) Result.retry() else Result.failure()
                 }
             }
         } catch (e: Exception) {

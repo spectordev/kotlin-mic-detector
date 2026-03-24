@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { v4 as uuidv4 } from 'uuid'
-import { z } from 'zod'
 import { query } from '../db.js'
+import { recipientEmailSchema } from '../middleware/validate.js'
 import { createUploadMiddleware, recordingUploadFields } from '../middleware/upload.js'
 import { scheduleRecordingDelivery } from '../services/recordingProcessor.js'
 
@@ -9,13 +9,11 @@ const router = Router()
 const upload = createUploadMiddleware()
 const uploadMiddleware = recordingUploadFields(upload)
 
-const recipientSchema = z.string().trim().email().max(320)
-
 router.post('/upload', uploadMiddleware, async (req, res, next) => {
   try {
     const rawEmail = req.body?.recipient_email
     const recipient_email = typeof rawEmail === 'string' ? rawEmail : rawEmail?.[0]
-    const parsedEmail = recipientSchema.safeParse(recipient_email)
+    const parsedEmail = recipientEmailSchema.safeParse(recipient_email)
     if (!parsedEmail.success) {
       return res.status(400).json({
         error: 'invalid_recipient_email',

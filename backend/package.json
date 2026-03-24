@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "db:init": "node src/scripts/initDb.js",
-    "test": "node --test tests/validation.test.js"
+    "check-env": "node src/scripts/checkEnv.js",
+    "test": "node --test tests/workflow-01-device-validation.test.js tests/workflow-02-recipient-validation.test.js tests/workflow-03-health-http.test.js tests/workflow-04-device-email-http.test.js tests/workflow-05-recordings-upload-http.test.js tests/workflow-06-smtp-text.test.js"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
@@ -18,5 +19,8 @@
     "nodemailer": "^6.9.16",
     "uuid": "^11.0.5",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
   }
 }

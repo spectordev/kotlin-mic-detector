@@ -17,6 +17,8 @@
     <string name="action_stop_monitoring">Stop monitoring</string>
     <string name="hint_start_requires_permissions">Start will prompt for microphone (and notification on Android 13+) if needed.</string>
     <string name="toast_mic_required">Microphone permission is required.</string>
+    <string name="toast_notifications_denied">Notifications denied — the monitoring notification may not appear. Monitoring will still start.</string>
+    <string name="toast_could_not_start_monitoring">Could not start monitoring. Check microphone permission and try again.</string>
     <string name="toast_email_required">Save a destination email first.</string>
     <string name="toast_endpoint_recommended">Add an upload URL so clips can be sent to your backend.</string>
     <string name="notification_channel_name">Monitoring</string>
